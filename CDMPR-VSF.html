@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDMPR Verificador de Series Fancy</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Custom styles to use the Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Removes blue tap highlight on mobile */
+        }
+        /* Style for the input placeholder text */
+        .custom-placeholder::placeholder {
+            color: #555;
+            text-transform: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+
+    <div class="container mx-auto p-4 max-w-md">
+        <!-- Header Section -->
+        <header class="text-center py-6">
+            <h1 class="text-4xl font-black text-orange-500 tracking-tight">CDMPR Verificador de Series Fancy</h1>
+            <p class="text-gray-400 mt-2">¿Es tu billete un tesoro escondido?</p>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Manual Input Card -->
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl">
+                <label for="serial-input" class="block text-sm font-medium text-gray-300 mb-2">Ingresa el Número de Serie</label>
+                <input type="text" id="serial-input" class="w-full bg-gray-700 text-white border-2 border-gray-600 rounded-lg px-4 py-3 text-lg uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 custom-placeholder" placeholder="Ej: K98765432B">
+                <button id="check-btn" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-lg mt-4 transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                    Verificar Serie
+                </button>
+            </div>
+
+            <!-- Separator and Scan Button -->
+            <div class="text-center my-4">
+                <p class="text-gray-500 text-sm">o</p>
+                <button id="scan-btn" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg mt-4 transition duration-300 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    Escanear Billete con Cámara
+                </button>
+                 <p class="text-xs text-gray-500 mt-2 px-4">El escaneo con cámara es una función compleja. Por ahora, por favor usa la entrada manual.</p>
+                
+                <a href="https://www.facebook.com/groups/cdmpr" target="_blank" rel="noopener noreferrer" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg mt-4 transition duration-300 flex items-center justify-center shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v2.385z"/></svg>
+                    Únete al Grupo de Facebook
+                </a>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results-container" class="mt-6 hidden">
+                <h2 class="text-2xl font-bold text-center mb-4">Resultado del Análisis</h2>
+                <div id="results-content" class="bg-gray-800 p-6 rounded-2xl shadow-2xl">
+                    <!-- Dynamic results will be injected here by JavaScript -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- DOM Element References ---
+        const checkBtn = document.getElementById('check-btn');
+        const serialInput = document.getElementById('serial-input');
+        const resultsContainer = document.getElementById('results-container');
+        const resultsContent = document.getElementById('results-content');
+        const scanBtn = document.getElementById('scan-btn');
+
+        // --- Event Listeners ---
+        checkBtn.addEventListener('click', () => {
+            const serial = serialInput.value.toUpperCase();
+            analyzeSerialNumber(serial);
+        });
+
+        serialInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                checkBtn.click(); // Programmatically click the button
+            }
+        });
+
+        scanBtn.addEventListener('click', () => {
+            displayScanMessage();
+        });
+
+        // --- Core Analysis Logic ---
+        function analyzeSerialNumber(serial) {
+            // 1. Sanitize and extract the 8 digits from the input string.
+            const digits = serial.replace(/[^0-9]/g, '');
+
+            if (digits.length !== 8) {
+                displayError('Número de Serie Inválido. Debe contener exactamente 8 dígitos.');
+                return;
+            }
+
+            // 2. Run all checks and collect any "fancy" types found.
+            const fancyTypes = [];
+            
+            // Solids and Similar
+            if (isSolid(digits)) fancyTypes.push({ name: 'Sólido', description: 'Todos los 8 dígitos son iguales (ej: 77777777).' });
+            if (isSevenOfAKind(digits)) fancyTypes.push({ name: 'Casi Sólido (7 Iguales)', description: 'Siete de los ocho dígitos son idénticos (ej: 77777771).' });
+
+            // Palindromic (Radar) Types
+            if (isRadar(digits)) fancyTypes.push({ name: 'Radar', description: 'Se lee igual hacia adelante y hacia atrás (un palíndromo, ej: 12344321).' });
+            if (isSuperRadar(digits)) fancyTypes.push({ name: 'Súper Radar', description: 'Los dígitos exteriores coinciden, y los 6 dígitos interiores son iguales (ej: 19999991).' });
+
+            // Repeating Types
+            if (isRepeater(digits)) fancyTypes.push({ name: 'Repetidor', description: 'La primera mitad es idéntica a la segunda (ej: 12341234).' });
+            if (isSuperRepeater(digits)) fancyTypes.push({ name: 'Súper Repetidor', description: 'Los dos primeros dígitos se repiten cuatro veces (ej: 12121212).' });
+            if (isDoubleQuad(digits)) fancyTypes.push({ name: 'Doble Quad', description: 'El número consiste en cuatro pares de dígitos (ej: 00112233).' });
+
+            // Sequential Types
+            if (isLadder(digits)) fancyTypes.push({ name: 'Escalera', description: 'Los dígitos están en perfecto orden secuencial (ej: 12345678 o 87654321).' });
+
+            // Digit-based Types
+            if (isBinary(digits)) fancyTypes.push({ name: 'Binario', description: 'Consiste solo de unos y ceros.' });
+
+            // Numerical Value Types
+            if (isLow(digits)) fancyTypes.push({ name: 'Número Bajo', description: 'Un número de serie muy bajo (1000 o menos, ej: 00000012).' });
+            if (isHigh(digits)) fancyTypes.push({ name: 'Número Alto', description: 'Un número de serie muy alto (empieza con 999).' });
+            
+            // Date Types
+            const birthdayResult = isBirthday(digits);
+            if (birthdayResult.isBirthday) {
+                fancyTypes.push({ name: 'Fecha de Cumpleaños', description: `Puede leerse como una fecha: ${birthdayResult.date}` });
+            }
+
+            // 3. Display the findings in the UI.
+            displayResults(serial, fancyTypes);
+        }
+
+        // --- Helper Check Functions for Different Fancy Types ---
+        const isSolid = (d) => new Set(d.split('')).size === 1;
+        const isRadar = (d) => d === d.split('').reverse().join('');
+        const isRepeater = (d) => d.substring(0, 4) === d.substring(4, 8);
+        const isBinary = (d) => /^[01]+$/.test(d); // UPDATED to only check for 0s and 1s.
+        const isLow = (d) => parseInt(d, 10) <= 1000;
+        const isHigh = (d) => d.startsWith('999');
+
+        function isSuperRepeater(d) {
+            const firstPair = d.substring(0, 2);
+            // Ensure it's not a solid number, which would technically match this pattern
+            if (new Set(d.split('')).size === 1) return false;
+            return firstPair === d.substring(2, 4) && firstPair === d.substring(4, 6) && firstPair === d.substring(6, 8);
+        }
+
+        function isSuperRadar(d) {
+            // Ends must match, and the 6 middle digits must be a solid block.
+            // Also check it's not a full solid number.
+            if (new Set(d.split('')).size === 1) return false;
+            return d[0] === d[7] && new Set(d.substring(1, 7).split('')).size === 1;
+        }
+
+        function isDoubleQuad(d) {
+            // Must be 4 pairs, but not a solid number.
+            if (new Set(d.split('')).size === 1) return false;
+            return d[0] === d[1] && d[2] === d[3] && d[4] === d[5] && d[6] === d[7];
+        }
+
+        function isLadder(d) {
+            const straight = '0123456789';
+            const reversed = '9876543210';
+            return straight.includes(d) || reversed.includes(d);
+        }
+
+        function isSevenOfAKind(d) {
+            // A true solid (8 of a kind) is not a "near solid"
+            if (new Set(d.split('')).size === 1) return false;
+            const counts = {};
+            for (const digit of d) {
+                counts[digit] = (counts[digit] || 0) + 1;
+            }
+            return Object.values(counts).some(count => count >= 7);
+        }
+
+        function isBirthday(d) {
+            // Check for YYYYMMDD format
+            const y1 = parseInt(d.substring(0, 4), 10);
+            const m1 = parseInt(d.substring(4, 6), 10);
+            const d1 = parseInt(d.substring(6, 8), 10);
+            if (isValidDate(y1, m1, d1)) {
+                return { isBirthday: true, date: `${String(d1).padStart(2, '0')}/${String(m1).padStart(2, '0')}/${y1} (DD/MM/AAAA)` };
+            }
+
+            // Check for MMDDYYYY format
+            const m2 = parseInt(d.substring(0, 2), 10);
+            const d2 = parseInt(d.substring(2, 4), 10);
+            const y2 = parseInt(d.substring(4, 8), 10);
+            if (isValidDate(y2, m2, d2)) {
+                 return { isBirthday: true, date: `${String(d2).padStart(2, '0')}/${String(m2).padStart(2, '0')}/${y2} (DD/MM/AAAA)` };
+            }
+            
+            return { isBirthday: false };
+        }
+
+        function isValidDate(y, m, d) {
+            // A robust check to see if a date is real (accounts for leap years, etc.)
+            if (y < 1000 || y > new Date().getFullYear() + 1 || m < 1 || m > 12 || d < 1 || d > 31) {
+                return false;
+            }
+            const testDate = new Date(y, m - 1, d);
+            return testDate.getFullYear() === y && (testDate.getMonth() + 1) === m && testDate.getDate() === d;
+        }
+
+
+        // --- UI Display Functions ---
+        function displayResults(serial, fancyTypes) {
+            resultsContainer.classList.remove('hidden');
+            resultsContent.innerHTML = ''; // Clear previous results
+
+            let html = `<p class="text-center text-lg mb-4">Serie: <span class="font-mono bg-gray-700 py-1 px-2 rounded-md">${serial}</span></p>`;
+
+            if (fancyTypes.length > 0) {
+                html += `<div class="text-center mb-4"><span class="px-4 py-2 bg-orange-600 text-white font-bold rounded-full text-lg">🎉 ¡Es Fancy! 🎉</span></div>`;
+                html += '<ul class="space-y-3">';
+                fancyTypes.forEach(type => {
+                    html += `<li class="bg-gray-700 p-3 rounded-lg">
+                                <strong class="text-orange-500">${type.name}</strong>
+                                <p class="text-gray-300 text-sm">${type.description}</p>
+                             </li>`;
+                });
+                html += '</ul>';
+            } else {
+                html += `<div class="text-center"><span class="px-4 py-2 bg-gray-600 text-white font-semibold rounded-full text-lg">🧐 No es una Serie Fancy 🧐</span></div>`;
+                html += `<p class="text-center text-gray-400 mt-4">Esta parece ser una serie estándar. ¡Sigue buscando!</p>`;
+            }
+
+            resultsContent.innerHTML = html;
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function displayError(message) {
+            resultsContainer.classList.remove('hidden');
+            resultsContent.innerHTML = `<div class="text-center text-red-400 bg-red-900/50 p-4 rounded-lg">
+                                          <strong class="font-bold">¡Error!</strong>
+                                          <p>${message}</p>
+                                        </div>`;
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function displayScanMessage() {
+            resultsContainer.classList.remove('hidden');
+            resultsContent.innerHTML = `<div class="text-center text-blue-300 bg-blue-900/50 p-4 rounded-lg">
+                                          <strong class="font-bold">¡Próximamente!</strong>
+                                          <p>La función de escaneo con cámara requiere tecnología avanzada y es difícil de implementar en una aplicación web simple. Por ahora, por favor ingresa el número de serie manualmente.</p>
+                                        </div>`;
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+    </script>
+</body>
+</html>
+
+
+
+
+
+

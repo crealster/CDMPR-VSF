@@ -168,6 +168,21 @@
             birthday: { name: 'Fecha de Cumpleaños', description: 'Puede leerse como una fecha.', value: { circulated: '$2 - $5', good: '$5 - $15', uncirculated: '$20+' } }
         };
 
+        const FEDERAL_RESERVE_BANKS = {
+            'A': { number: 1, city: 'Boston' },
+            'B': { number: 2, city: 'New York' },
+            'C': { number: 3, city: 'Philadelphia' },
+            'D': { number: 4, city: 'Cleveland' },
+            'E': { number: 5, city: 'Richmond' },
+            'F': { number: 6, city: 'Atlanta' },
+            'G': { number: 7, city: 'Chicago' },
+            'H': { number: 8, city: 'St. Louis' },
+            'I': { number: 9, city: 'Minneapolis' },
+            'J': { number: 10, city: 'Kansas City' },
+            'K': { number: 11, city: 'Dallas' },
+            'L': { number: 12, city: 'San Francisco' }
+        };
+
         // --- Event Listeners ---
         
         conditionSelector.addEventListener('click', (e) => {
@@ -237,12 +252,18 @@
         function analyzeSerialNumber(serial) {
             const isStarNote = serial.endsWith('*');
             const digits = serial.replace(/[^0-9]/g, '');
+            const firstLetter = serial.charAt(0);
 
+            if (!/^[A-Z]/.test(firstLetter)) {
+                 displayError('Número de Serie Inválido. Debe comenzar con una letra.');
+                 return;
+            }
             if (digits.length !== 8) {
                 displayError('Número de Serie Inválido. Asegúrate de incluir las letras y los 8 dígitos (ej: ML12345678B).');
                 return;
             }
 
+            const bankInfo = FEDERAL_RESERVE_BANKS[firstLetter];
             const fancyTypes = [];
             const values = FANCY_TYPES_DATA; // Use the global data object
             
@@ -278,7 +299,7 @@
                 fancyTypes.push(birthdayNote);
             }
 
-            displayResults(serial, fancyTypes);
+            displayResults(serial, fancyTypes, bankInfo);
         }
 
         // --- Helper Check Functions ---
@@ -361,11 +382,19 @@
         }
         
         // --- UI Display Functions ---
-        function displayResults(serial, fancyTypes) {
+        function displayResults(serial, fancyTypes, bankInfo) {
             resultsContainer.classList.remove('hidden');
             resultsContent.innerHTML = ''; 
 
-            let html = `<p class="text-center text-lg mb-4">Serie: <span class="font-mono bg-gray-700 py-1 px-2 rounded-md">${serial}</span></p>`;
+            let bankHtml = '';
+            if(bankInfo) {
+                bankHtml = `<div class="bg-gray-700 p-3 rounded-lg mb-4 text-center">
+                                <p class="text-sm text-gray-400">Banco de la Reserva Federal</p>
+                                <p class="font-bold text-lg">${bankInfo.number} - ${bankInfo.city}</p>
+                            </div>`;
+            }
+
+            let html = `<p class="text-center text-lg mb-4">Serie: <span class="font-mono bg-gray-700 py-1 px-2 rounded-md">${serial}</span></p>${bankHtml}`;
 
             if (fancyTypes.length > 0) {
                 html += `<div class="text-center mb-4"><span class="px-4 py-2 bg-orange-600 text-white font-bold rounded-full text-lg">🎉 ¡Es Fancy! 🎉</span></div>`;

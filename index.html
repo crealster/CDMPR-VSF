@@ -33,17 +33,51 @@
         <header class="text-center py-6">
             <h1 class="text-4xl font-black text-orange-500 tracking-tight">CDMPR Verificador de Series Fancy</h1>
             <p class="text-gray-400 mt-2">¿Es tu billete un tesoro escondido?</p>
+            <!-- Educational Guide Button -->
+            <button id="guide-btn" class="mt-4 text-orange-400 hover:text-orange-300 font-semibold py-2 px-4 rounded-lg transition-colors duration-200 border border-orange-500/50 hover:border-orange-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block -mt-1 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                Guía de Series Fancy
+            </button>
         </header>
 
         <!-- Main Content -->
         <main>
             <!-- Manual Input Card -->
             <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl">
-                <label for="serial-input" class="block text-sm font-medium text-gray-300 mb-2">Ingresa el Número de Serie</label>
-                <input type="text" id="serial-input" class="w-full bg-gray-700 text-white border-2 border-gray-600 rounded-lg px-4 py-3 text-lg uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 custom-placeholder" placeholder="Ej: K98765432B">
+                <label for="serial-input" class="block text-sm font-medium text-gray-300 mb-2">Ingresa el Número de Serie Completo</label>
+                <div class="relative">
+                    <input type="text" id="serial-input" class="w-full bg-gray-700 text-white border-2 border-gray-600 rounded-lg pl-4 pr-10 py-3 text-lg uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 custom-placeholder" placeholder="Ej: ML12345678B o MF12345678*">
+                    <button id="clear-btn" title="Limpiar" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-white transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
                 
+                <!-- Denomination and Year Inputs -->
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <label for="denomination-select" class="block text-sm font-medium text-gray-300 mb-2">Denominación</label>
+                        <select id="denomination-select" class="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <option value="1">$1</option>
+                            <option value="2">$2</option>
+                            <option value="5">$5</option>
+                            <option value="10">$10</option>
+                            <option value="20">$20</option>
+                            <option value="50">$50</option>
+                            <option value="100">$100</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="year-select" class="block text-sm font-medium text-gray-300 mb-2">Año de Serie</label>
+                        <input type="text" id="year-select" class="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Ej: 2017A">
+                    </div>
+                </div>
+
                 <!-- Condition Selector -->
-                <div class="mt-4">
+                <div class="mt-6">
                     <label class="block text-sm font-medium text-gray-300 mb-2">Selecciona la Condición del Billete</label>
                     <div id="condition-selector" class="grid grid-cols-3 gap-2">
                         <button data-condition="circulated" class="condition-btn bg-gray-600 text-white py-2 px-3 rounded-lg text-sm focus:outline-none transition-all duration-200">Circulado</button>
@@ -72,26 +106,70 @@
         <!-- Facebook Button Moved to the bottom -->
         <div class="mt-8 text-center">
              <a href="https://www.facebook.com/groups/cdmpr" target="_blank" rel="noopener noreferrer" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg mt-4 transition duration-300 flex items-center justify-center shadow-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v2.385z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3-596 0-5.192 1.583-5.192 4.615v2.385z"/></svg>
                 Únete al Grupo de Facebook
             </a>
         </div>
     </div>
 
+    <!-- Educational Guide Modal -->
+    <div id="guide-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 relative">
+            <button id="guide-close-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <h2 class="text-2xl font-bold text-orange-500 mb-4">Guía de Series Fancy</h2>
+            <div id="guide-content" class="space-y-4 text-gray-300">
+                <!-- Guide content will be populated by JS -->
+            </div>
+        </div>
+    </div>
+
+
     <script>
         // --- DOM Element References ---
         const checkBtn = document.getElementById('check-btn');
+        const clearBtn = document.getElementById('clear-btn');
         const serialInput = document.getElementById('serial-input');
+        const denominationSelect = document.getElementById('denomination-select');
+        const yearSelect = document.getElementById('year-select');
         const resultsContainer = document.getElementById('results-container');
         const resultsContent = document.getElementById('results-content');
         const conditionSelector = document.getElementById('condition-selector');
         const conditionBtns = document.querySelectorAll('.condition-btn');
+        // Guide Modal elements
+        const guideBtn = document.getElementById('guide-btn');
+        const guideModal = document.getElementById('guide-modal');
+        const guideCloseBtn = document.getElementById('guide-close-btn');
+        const guideContent = document.getElementById('guide-content');
 
         let selectedCondition = null; // Variable to store the selected condition
 
+        // --- Data Definitions ---
+        const FANCY_TYPES_DATA = {
+            starNote: { name: 'Billete Estrella (Star Note)', description: 'Un billete de reemplazo indicado por una estrella (★) al final de la serie.', value: { circulated: 'Varía', good: 'Varía', uncirculated: 'Varía' } },
+            solid: { name: 'Sólido', description: 'Todos los 8 dígitos son iguales (ej: 77777777).', value: { circulated: '$200 - $400', good: '$400 - $800', uncirculated: '$800+' } },
+            sevenOfAKind: { name: 'Casi Sólido (7 Iguales)', description: 'Siete de los ocho dígitos son idénticos (ej: 77777771).', value: { circulated: '$20 - $40', good: '$40 - $80', uncirculated: '$100+' } },
+            radar: { name: 'Radar', description: 'Se lee igual hacia adelante y hacia atrás (un palíndromo, ej: 12344321).', value: { circulated: '$5 - $15', good: '$15 - $30', uncirculated: '$40+' } },
+            superRadar: { name: 'Súper Radar', description: 'Los dígitos exteriores coinciden, y los 6 dígitos interiores son iguales (ej: 19999991).', value: { circulated: '$20 - $50', good: '$50 - $100', uncirculated: '$150+' } },
+            repeater: { name: 'Repetidor', description: 'La primera mitad es idéntica a la segunda (ej: 12341234).', value: { circulated: '$5 - $10', good: '$10 - $25', uncirculated: '$30+' } },
+            superRepeater: { name: 'Súper Repetidor', description: 'Los dos primeros dígitos se repiten cuatro veces (ej: 12121212).', value: { circulated: '$25 - $50', good: '$50 - $100', uncirculated: '$150+' } },
+            doubleQuad: { name: 'Doble Quad', description: 'El número consiste en cuatro pares de dígitos (ej: 00112233).', value: { circulated: '$10 - $25', good: '$25 - $50', uncirculated: '$60+' } },
+            ladder: { name: 'Escalera', description: 'Los dígitos están en perfecto orden secuencial (ej: 12345678 o 87654321).', value: { circulated: '$100 - $500', good: '$500 - $1500', uncirculated: '$2000+' } },
+            trueBinary: { name: 'Binario Verdadero (0s y 1s)', description: 'Consiste solo de ceros y unos.', value: { circulated: '$5 - $20', good: '$20 - $40', uncirculated: '$50+' } },
+            twoDigitBinary: { name: 'Binario (2 Dígitos)', description: 'Consiste en cualquier combinación de solo dos dígitos distintos (ej: 74774774).', value: { circulated: '$2 - $5', good: '$5 - $10', uncirculated: '$15+' } },
+            trinary: { name: 'Trinario (3 Dígitos)', description: 'Consiste en cualquier combinación de solo tres dígitos distintos.', value: { circulated: '$1 - $3', good: '$3 - $7', uncirculated: '$10+' } },
+            rotator: { name: 'Giratorio (Rotator)', description: 'El número se puede leer al revés (solo contiene 0, 1, 6, 8, 9).', value: { circulated: '$5 - $15', good: '$15 - $30', uncirculated: '$40+' } },
+            bookend: { name: 'Extremos Iguales (Bookend)', description: 'Los dos primeros dígitos son iguales a los dos últimos (ej: 12345612).', value: { circulated: '$5 - $10', good: '$10 - $20', uncirculated: '$25+' } },
+            low: { name: 'Número Bajo', description: 'Un número de serie muy bajo (100 o menos).', value: { circulated: '$50 - $100', good: '$100 - $200', uncirculated: '$250+' } },
+            high: { name: 'Número Alto', description: 'Un número de serie muy alto (empieza con 999).', value: { circulated: '$1 - $5', good: '$5 - $10', uncirculated: '$15+' } },
+            birthday: { name: 'Fecha de Cumpleaños', description: 'Puede leerse como una fecha.', value: { circulated: '$2 - $5', good: '$5 - $15', uncirculated: '$20+' } }
+        };
+
         // --- Event Listeners ---
         
-        // Handle condition button selection
         conditionSelector.addEventListener('click', (e) => {
             if (e.target.classList.contains('condition-btn')) {
                 conditionBtns.forEach(btn => {
@@ -111,91 +189,120 @@
                 displayError('Por favor, selecciona una condición para el billete antes de verificar.');
                 return;
             }
+            
+            if (serial.endsWith('*')) {
+                if (!yearSelect.value) {
+                    displayError('Por favor, ingresa el Año de Serie para poder buscar la información del Billete Estrella.');
+                    return;
+                }
+                if (!/^[A-Z]/.test(serial)) {
+                    displayError('Los Billetes Estrella deben comenzar con una o más letras.');
+                    return;
+                }
+            }
+
             analyzeSerialNumber(serial);
+        });
+        
+        clearBtn.addEventListener('click', () => {
+            serialInput.value = '';
+            yearSelect.value = '';
+            denominationSelect.value = '1';
+            selectedCondition = null;
+
+            conditionBtns.forEach(btn => {
+                btn.classList.remove('bg-orange-600', 'ring-2', 'ring-orange-500');
+                btn.classList.add('bg-gray-600');
+            });
+
+            resultsContainer.classList.add('hidden');
+            serialInput.focus();
         });
 
         serialInput.addEventListener('keyup', (event) => {
             if (event.key === 'Enter') {
-                checkBtn.click(); // Programmatically click the button
+                checkBtn.click();
+            }
+        });
+
+        guideBtn.addEventListener('click', () => guideModal.classList.remove('hidden'));
+        guideCloseBtn.addEventListener('click', () => guideModal.classList.add('hidden'));
+        guideModal.addEventListener('click', (e) => {
+            if (e.target === guideModal) {
+                guideModal.classList.add('hidden');
             }
         });
 
         // --- Core Analysis Logic ---
         function analyzeSerialNumber(serial) {
-            // 1. Sanitize and extract the 8 digits from the input string.
+            const isStarNote = serial.endsWith('*');
             const digits = serial.replace(/[^0-9]/g, '');
 
             if (digits.length !== 8) {
-                displayError('Número de Serie Inválido. Debe contener exactamente 8 dígitos.');
+                displayError('Número de Serie Inválido. Asegúrate de incluir las letras y los 8 dígitos (ej: ML12345678B).');
                 return;
             }
 
-            // 2. Run all checks and collect any "fancy" types found.
             const fancyTypes = [];
-            const values = {
-                solid: { name: 'Sólido', description: 'Todos los 8 dígitos son iguales (ej: 77777777).', value: { circulated: '$200 - $400', good: '$400 - $800', uncirculated: '$800+' } },
-                sevenOfAKind: { name: 'Casi Sólido (7 Iguales)', description: 'Siete de los ocho dígitos son idénticos (ej: 77777771).', value: { circulated: '$20 - $40', good: '$40 - $80', uncirculated: '$100+' } },
-                radar: { name: 'Radar', description: 'Se lee igual hacia adelante y hacia atrás (un palíndromo, ej: 12344321).', value: { circulated: '$5 - $15', good: '$15 - $30', uncirculated: '$40+' } },
-                superRadar: { name: 'Súper Radar', description: 'Los dígitos exteriores coinciden, y los 6 dígitos interiores son iguales (ej: 19999991).', value: { circulated: '$20 - $50', good: '$50 - $100', uncirculated: '$150+' } },
-                repeater: { name: 'Repetidor', description: 'La primera mitad es idéntica a la segunda (ej: 12341234).', value: { circulated: '$5 - $10', good: '$10 - $25', uncirculated: '$30+' } },
-                superRepeater: { name: 'Súper Repetidor', description: 'Los dos primeros dígitos se repiten cuatro veces (ej: 12121212).', value: { circulated: '$25 - $50', good: '$50 - $100', uncirculated: '$150+' } },
-                doubleQuad: { name: 'Doble Quad', description: 'El número consiste en cuatro pares de dígitos (ej: 00112233).', value: { circulated: '$10 - $25', good: '$25 - $50', uncirculated: '$60+' } },
-                ladder: { name: 'Escalera', description: 'Los dígitos están en perfecto orden secuencial (ej: 12345678 o 87654321).', value: { circulated: '$100 - $500', good: '$500 - $1500', uncirculated: '$2000+' } },
-                trueBinary: { name: 'Binario Verdadero (0s y 1s)', description: 'Consiste solo de ceros y unos.', value: { circulated: '$5 - $20', good: '$20 - $40', uncirculated: '$50+' } },
-                twoDigitBinary: { name: 'Binario (2 Dígitos)', description: 'Consiste en cualquier combinación de solo dos dígitos distintos (ej: 74774774).', value: { circulated: '$2 - $5', good: '$5 - $10', uncirculated: '$15+' } },
-                low: { name: 'Número Bajo', description: 'Un número de serie muy bajo (100 o menos).', value: { circulated: '$50 - $100', good: '$100 - $200', uncirculated: '$250+' } },
-                high: { name: 'Número Alto', description: 'Un número de serie muy alto (empieza con 999).', value: { circulated: '$1 - $5', good: '$5 - $10', uncirculated: '$15+' } },
-                birthday: { name: 'Fecha de Cumpleaños', description: 'Puede leerse como una fecha.', value: { circulated: '$2 - $5', good: '$5 - $15', uncirculated: '$20+' } }
-            };
+            const values = FANCY_TYPES_DATA; // Use the global data object
             
-            // Solids and Similar
+            if (isStarNote) {
+                const denomination = denominationSelect.value;
+                const seriesYear = yearSelect.value.toUpperCase();
+                const lookupUrl = `https://www.mycurrencycollection.com/reference/star-notes/lookup/${denomination}/${seriesYear}/${encodeURIComponent(serial)}`;
+                let starNoteType = {...values.starNote};
+                starNoteType.lookupUrl = lookupUrl;
+                fancyTypes.push(starNoteType);
+            }
+
             if (isSolid(digits)) fancyTypes.push(values.solid);
             if (isSevenOfAKind(digits)) fancyTypes.push(values.sevenOfAKind);
-
-            // Palindromic (Radar) Types
             if (isRadar(digits)) fancyTypes.push(values.radar);
             if (isSuperRadar(digits)) fancyTypes.push(values.superRadar);
-
-            // Repeating Types
             if (isRepeater(digits)) fancyTypes.push(values.repeater);
             if (isSuperRepeater(digits)) fancyTypes.push(values.superRepeater);
             if (isDoubleQuad(digits)) fancyTypes.push(values.doubleQuad);
-
-            // Sequential Types
+            if (isBookend(digits)) fancyTypes.push(values.bookend);
             if (isLadder(digits)) fancyTypes.push(values.ladder);
-
-            // Digit-based Types
             if (isTrueBinary(digits)) fancyTypes.push(values.trueBinary);
             if (isTwoDigitBinary(digits)) fancyTypes.push(values.twoDigitBinary);
-
-            // Numerical Value Types
-            if (isLow(digits, 100)) fancyTypes.push(values.low); // Check for numbers under 100
+            if (isTrinary(digits)) fancyTypes.push(values.trinary);
+            if (isRotator(digits)) fancyTypes.push(values.rotator);
+            if (isLow(digits, 100)) fancyTypes.push(values.low);
             if (isHigh(digits)) fancyTypes.push(values.high);
             
-            // Date Types
             const birthdayResult = isBirthday(digits);
             if (birthdayResult.isBirthday) {
-                let birthdayNote = {...values.birthday}; // create a copy
+                let birthdayNote = {...values.birthday};
                 birthdayNote.description = `Puede leerse como una fecha: ${birthdayResult.date}`;
                 fancyTypes.push(birthdayNote);
             }
 
-            // 3. Display the findings in the UI.
             displayResults(serial, fancyTypes);
         }
 
-        // --- Helper Check Functions for Different Fancy Types ---
+        // --- Helper Check Functions ---
         const isSolid = (d) => new Set(d.split('')).size === 1;
         const isRadar = (d) => d === d.split('').reverse().join('');
         const isRepeater = (d) => d.substring(0, 4) === d.substring(4, 8);
         const isTrueBinary = (d) => /^[01]+$/.test(d);
         const isLow = (d, limit) => parseInt(d, 10) <= limit;
         const isHigh = (d) => d.startsWith('999');
+        const isRotator = (d) => /^[01689]+$/.test(d);
 
         function isTwoDigitBinary(d) {
             if (isSuperRepeater(d) || isSolid(d)) return false;
-            const uniqueDigits = new Set(d.split(''));
-            return uniqueDigits.size === 2;
+            return new Set(d.split('')).size === 2;
+        }
+
+        function isTrinary(d) {
+            if (new Set(d.split('')).size <= 2) return false;
+            return new Set(d.split('')).size === 3;
+        }
+
+        function isBookend(d) {
+            if (isRadar(d) || isRepeater(d) || isSolid(d)) return false;
+            return d.substring(0, 2) === d.substring(6, 8);
         }
 
         function isSuperRepeater(d) {
@@ -230,22 +337,18 @@
         }
 
         function isBirthday(d) {
-            // Check for YYYYMMDD format (Español: DD/MM/YYYY)
             const y1 = parseInt(d.substring(0, 4), 10);
             const m1 = parseInt(d.substring(4, 6), 10);
             const d1 = parseInt(d.substring(6, 8), 10);
             if (isValidDate(y1, m1, d1)) {
-                return { isBirthday: true, date: `${String(d1).padStart(2, '0')}/${String(m1).padStart(2, '0')}/${y1} (Formato Español)`, month: m1, day: d1, year: y1 };
+                return { isBirthday: true, date: `${String(d1).padStart(2, '0')}/${String(m1).padStart(2, '0')}/${y1} (Formato Español)` };
             }
-
-            // Check for MMDDYYYY format (Inglés: MM/DD/YYYY)
             const m2 = parseInt(d.substring(0, 2), 10);
             const d2 = parseInt(d.substring(2, 4), 10);
             const y2 = parseInt(d.substring(4, 8), 10);
             if (isValidDate(y2, m2, d2)) {
-                 return { isBirthday: true, date: `${String(m2).padStart(2, '0')}/${String(d2).padStart(2, '0')}/${y2} (Formato Inglés)`, month: m2, day: d2, year: y2 };
+                 return { isBirthday: true, date: `${String(m2).padStart(2, '0')}/${String(d2).padStart(2, '0')}/${y2} (Formato Inglés)` };
             }
-            
             return { isBirthday: false };
         }
 
@@ -260,7 +363,7 @@
         // --- UI Display Functions ---
         function displayResults(serial, fancyTypes) {
             resultsContainer.classList.remove('hidden');
-            resultsContent.innerHTML = ''; // Clear previous results
+            resultsContent.innerHTML = ''; 
 
             let html = `<p class="text-center text-lg mb-4">Serie: <span class="font-mono bg-gray-700 py-1 px-2 rounded-md">${serial}</span></p>`;
 
@@ -269,30 +372,30 @@
                 html += '<ul class="space-y-3">';
                 fancyTypes.forEach(type => {
                     const value = type.value[selectedCondition] || 'N/A';
-                    let famousDateButton = ''; // Variable for the new button
+                    let extraButton = ''; 
 
-                    // Check if the type is a birthday to add the dynamic search button
                     if (type.name === 'Fecha de Cumpleaños') {
                         const dateMatch = type.description.match(/(\d{2})\/(\d{2})\/(\d{4})/);
                         if (dateMatch) {
                             const formatMatch = type.description.match(/\(Formato (Español|Inglés)\)/);
                             const isEnglishFormat = formatMatch && formatMatch[1] === 'Inglés';
-                            
                             const month = isEnglishFormat ? dateMatch[1] : dateMatch[2];
                             const day   = isEnglishFormat ? dateMatch[2] : dateMatch[1];
-                            
-                            // English month names are required for the onthisday.com URL structure
                             const englishMonthNames = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
                             const englishMonthName = englishMonthNames[parseInt(month, 10) - 1];
-
-                            // Construct the new URL for onthisday.com
                             const searchUrl = `https://www.onthisday.com/day/${englishMonthName}/${parseInt(day, 10)}`;
-                            
-                            famousDateButton = `<a href="${searchUrl}" target="_blank" rel="noopener noreferrer" class="block text-center mt-3 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold py-2 px-3 rounded-lg transition-colors duration-200">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block -mt-1 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
-                                                    Ver Eventos en OnThisDay.com
-                                                </a>`;
+                            extraButton = `<a href="${searchUrl}" target="_blank" rel="noopener noreferrer" class="block text-center mt-3 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold py-2 px-3 rounded-lg transition-colors duration-200">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block -mt-1 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                                            Ver Eventos en OnThisDay.com
+                                          </a>`;
                         }
+                    }
+                    
+                    if (type.name.includes('Estrella')) {
+                         extraButton = `<a href="${type.lookupUrl}" target="_blank" rel="noopener noreferrer" class="block text-center mt-3 bg-green-600 hover:bg-green-500 text-white text-xs font-semibold py-2 px-3 rounded-lg transition-colors duration-200">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block -mt-1 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
+                                            Buscar Rareza del Billete Estrella
+                                          </a>`;
                     }
 
                     html += `<li class="bg-gray-700 p-4 rounded-lg">
@@ -306,7 +409,7 @@
                                         <p class="font-bold text-lg text-green-400">${value}</p>
                                     </div>
                                 </div>
-                                ${famousDateButton}
+                                ${extraButton}
                              </li>`;
                 });
                 html += '</ul>';
@@ -328,6 +431,18 @@
                                         </div>`;
             resultsContainer.scrollIntoView({ behavior: 'smooth' });
         }
+
+        // --- Initial Setup ---
+        function populateGuide() {
+            guideContent.innerHTML = Object.values(FANCY_TYPES_DATA).map(type => `
+                <div>
+                    <h3 class="font-bold text-orange-400">${type.name}</h3>
+                    <p class="text-sm text-gray-400">${type.description}</p>
+                </div>
+            `).join('');
+        }
+        
+        populateGuide(); // Call the function to populate the guide when the script loads.
 
     </script>
 </body>

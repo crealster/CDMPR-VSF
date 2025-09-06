@@ -57,17 +57,6 @@
                 </button>
             </div>
 
-            <!-- Separator and Scan Button -->
-            <div class="text-center my-4">
-                <p class="text-gray-500 text-sm">o</p>
-                <button id="scan-btn" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg mt-4 transition duration-300 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                    Escanear Billete con Cámara
-                </button>
-                 <p class="text-xs text-gray-500 mt-2 px-4">El escaneo con cámara es una función compleja. Por ahora, por favor usa la entrada manual.</p>
-                
-            </div>
-
             <!-- Results Section -->
             <div id="results-container" class="mt-6 hidden">
                 <h2 class="text-2xl font-bold text-center mb-4">Resultado del Análisis</h2>
@@ -95,7 +84,6 @@
         const serialInput = document.getElementById('serial-input');
         const resultsContainer = document.getElementById('results-container');
         const resultsContent = document.getElementById('results-content');
-        const scanBtn = document.getElementById('scan-btn');
         const conditionSelector = document.getElementById('condition-selector');
         const conditionBtns = document.querySelectorAll('.condition-btn');
 
@@ -130,10 +118,6 @@
             if (event.key === 'Enter') {
                 checkBtn.click(); // Programmatically click the button
             }
-        });
-
-        scanBtn.addEventListener('click', () => {
-            displayScanMessage();
         });
 
         // --- Core Analysis Logic ---
@@ -188,20 +172,16 @@
             if (isLow(digits, 100)) fancyTypes.push(values.low); // Check for numbers under 100
             if (isHigh(digits)) fancyTypes.push(values.high);
             
-            // Display initial results first
-            displayResults(serial, fancyTypes);
-            
-            // Date Types - Check after displaying results so the UI is responsive
+            // Date Types
             const birthdayResult = isBirthday(digits);
             if (birthdayResult.isBirthday) {
-                // Add the birthday type to the UI dynamically
-                let birthdayNote = {...values.birthday};
+                let birthdayNote = {...values.birthday}; // create a copy
                 birthdayNote.description = `Puede leerse como una fecha: ${birthdayResult.date}`;
-                addResult(birthdayNote);
-
-                // Live check for famous events using Gemini
-                fetchFamousEvents(birthdayResult.month, birthdayResult.day, birthdayResult.year);
+                fancyTypes.push(birthdayNote);
             }
+
+            // 3. Display the findings in the UI.
+            displayResults(serial, fancyTypes);
         }
 
         // --- Helper Check Functions for Different Fancy Types ---
@@ -277,117 +257,7 @@
             return testDate.getFullYear() === y && (testDate.getMonth() + 1) === m && testDate.getDate() === d;
         }
         
-        // --- Gemini API Call for Famous Dates ---
-        async function fetchFamousEvents(month, day, year) {
-            const dateString = new Date(year, month - 1, day).toLocaleDateString('es-ES', { month: 'long', day: 'numeric' });
-            
-            // Add a placeholder to the UI
-            const placeholderId = 'famous-date-placeholder';
-            const placeholderHtml = `<li id="${placeholderId}" class="bg-gray-700 p-4 rounded-lg opacity-75">
-                                        <div>
-                                            <strong class="text-yellow-400">Buscando eventos para ${dateString}...</strong>
-                                            <div class="h-2 bg-gray-600 rounded-full w-full mt-2 animate-pulse"></div>
-                                        </div>
-                                     </li>`;
-            document.querySelector('#results-content ul')?.insertAdjacentHTML('beforeend', placeholderHtml);
-
-            const apiKey = ""; // API key will be injected by the environment.
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-            const userQuery = `En español, en una lista de viñetas, enumera de forma muy concisa (máximo 3) los eventos históricos o nacimientos famosos más importantes que ocurrieron en la fecha ${dateString} (sin importar el año). Si no encuentras eventos muy significativos, responde con "No se encontraron eventos mayores para esta fecha."`;
-
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                tools: [{ "google_search": {} }],
-            };
-            
-            const placeholder = document.getElementById(placeholderId);
-
-            try {
-                // Basic exponential backoff
-                let response;
-                let retries = 3;
-                let delay = 1000;
-                while (retries > 0) {
-                    response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    if (response.ok) break;
-                    retries--;
-                    if(retries > 0) await new Promise(res => setTimeout(res, delay));
-                    delay *= 2;
-                }
-
-                if (!response.ok) {
-                    throw new Error(`La búsqueda falló después de varios intentos. Código: ${response.status}`);
-                }
-
-                const result = await response.json();
-                
-                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                if (text && placeholder) {
-                    const eventHtml = `<li class="bg-indigo-900/50 p-4 rounded-lg border border-indigo-700">
-                                        <div>
-                                            <strong class="text-indigo-300">Eventos Notables para ${dateString}:</strong>
-                                            <p class="text-gray-300 text-sm whitespace-pre-line mt-1">${text.trim()}</p>
-                                        </div>
-                                     </li>`;
-                    placeholder.outerHTML = eventHtml;
-                } else if (placeholder) {
-                     // If there's no text, show a message instead of just disappearing
-                    const noResultHtml = `<li class="bg-gray-700 p-4 rounded-lg">
-                                            <div>
-                                                <strong class="text-yellow-400">Eventos para ${dateString}:</strong>
-                                                <p class="text-gray-300 text-sm mt-1">No se pudo encontrar información específica.</p>
-                                            </div>
-                                         </li>`;
-                    placeholder.outerHTML = noResultHtml;
-                }
-
-            } catch (error) {
-                console.error("Error fetching famous events:", error);
-                if (placeholder) {
-                    // Replace placeholder with an error message for the user
-                     const errorHtml = `<li class="bg-red-900/50 p-4 rounded-lg border border-red-700">
-                                        <div>
-                                            <strong class="text-red-300">Error en la Búsqueda</strong>
-                                            <p class="text-gray-300 text-sm mt-1">No se pudieron cargar los eventos para esta fecha. Por favor, inténtalo de nuevo más tarde.</p>
-                                        </div>
-                                     </li>`;
-                    placeholder.outerHTML = errorHtml;
-                }
-            }
-        }
-
-
         // --- UI Display Functions ---
-        function addResult(type) {
-             const resultsList = document.querySelector('#results-content ul');
-             if (!resultsList) return;
-             
-             const value = type.value[selectedCondition] || 'N/A';
-             const li = document.createElement('li');
-             li.className = 'bg-gray-700 p-4 rounded-lg flex justify-between items-center';
-             li.innerHTML = `<div>
-                                <strong class="text-orange-400">${type.name}</strong>
-                                <p class="text-gray-300 text-sm">${type.description}</p>
-                            </div>
-                            <div class="text-right ml-4 flex-shrink-0">
-                                <p class="text-xs text-gray-400">Valor Aprox.</p>
-                                <p class="font-bold text-lg text-green-400">${value}</p>
-                            </div>`;
-            resultsList.appendChild(li);
-
-            // Check if "no fancy" message is present and remove it
-            const noFancyMessage = document.getElementById('no-fancy-message');
-            if (noFancyMessage) {
-                noFancyMessage.innerHTML = `<div class="text-center mb-4"><span class="px-4 py-2 bg-orange-600 text-white font-bold rounded-full text-lg">🎉 ¡Es Fancy! 🎉</span></div>`;
-                noFancyMessage.id = ''; // remove id to prevent re-selection
-            }
-        }
-        
         function displayResults(serial, fancyTypes) {
             resultsContainer.classList.remove('hidden');
             resultsContent.innerHTML = ''; // Clear previous results
@@ -399,23 +269,51 @@
                 html += '<ul class="space-y-3">';
                 fancyTypes.forEach(type => {
                     const value = type.value[selectedCondition] || 'N/A';
-                    html += `<li class="bg-gray-700 p-4 rounded-lg flex justify-between items-center">
-                                <div>
-                                    <strong class="text-orange-400">${type.name}</strong>
-                                    <p class="text-gray-300 text-sm">${type.description}</p>
+                    let famousDateButton = ''; // Variable for the new button
+
+                    // Check if the type is a birthday to add the dynamic search button
+                    if (type.name === 'Fecha de Cumpleaños') {
+                        const dateMatch = type.description.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+                        if (dateMatch) {
+                            const formatMatch = type.description.match(/\(Formato (Español|Inglés)\)/);
+                            const isEnglishFormat = formatMatch && formatMatch[1] === 'Inglés';
+                            
+                            const month = isEnglishFormat ? dateMatch[1] : dateMatch[2];
+                            const day   = isEnglishFormat ? dateMatch[2] : dateMatch[1];
+                            
+                            // English month names are required for the onthisday.com URL structure
+                            const englishMonthNames = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+                            const englishMonthName = englishMonthNames[parseInt(month, 10) - 1];
+
+                            // Construct the new URL for onthisday.com
+                            const searchUrl = `https://www.onthisday.com/day/${englishMonthName}/${parseInt(day, 10)}`;
+                            
+                            famousDateButton = `<a href="${searchUrl}" target="_blank" rel="noopener noreferrer" class="block text-center mt-3 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold py-2 px-3 rounded-lg transition-colors duration-200">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block -mt-1 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                                                    Ver Eventos en OnThisDay.com
+                                                </a>`;
+                        }
+                    }
+
+                    html += `<li class="bg-gray-700 p-4 rounded-lg">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <strong class="text-orange-400">${type.name}</strong>
+                                        <p class="text-gray-300 text-sm">${type.description}</p>
+                                    </div>
+                                    <div class="text-right ml-4 flex-shrink-0">
+                                        <p class="text-xs text-gray-400">Valor Aprox.</p>
+                                        <p class="font-bold text-lg text-green-400">${value}</p>
+                                    </div>
                                 </div>
-                                <div class="text-right ml-4 flex-shrink-0">
-                                    <p class="text-xs text-gray-400">Valor Aprox.</p>
-                                    <p class="font-bold text-lg text-green-400">${value}</p>
-                                </div>
+                                ${famousDateButton}
                              </li>`;
                 });
                 html += '</ul>';
 
             } else {
-                html += `<div id="no-fancy-message" class="text-center"><span class="px-4 py-2 bg-gray-600 text-white font-semibold rounded-full text-lg">🧐 No es una Serie Fancy 🧐</span></div>`;
+                html += `<div class="text-center"><span class="px-4 py-2 bg-gray-600 text-white font-semibold rounded-full text-lg">🧐 No es una Serie Fancy 🧐</span></div>`;
                 html += `<p class="text-center text-gray-400 mt-4">Esta parece ser una serie estándar. ¡Sigue buscando!</p>`;
-                html += '<ul class="space-y-3 mt-4"></ul>'; // Add empty list for potential date results
             }
 
             resultsContent.innerHTML = html;
@@ -430,18 +328,8 @@
                                         </div>`;
             resultsContainer.scrollIntoView({ behavior: 'smooth' });
         }
-        
-        function displayScanMessage() {
-            resultsContainer.classList.remove('hidden');
-            resultsContent.innerHTML = `<div class="text-center text-blue-300 bg-blue-900/50 p-4 rounded-lg">
-                                          <strong class="font-bold">¡Próximamente!</strong>
-                                          <p>La función de escaneo con cámara requiere tecnología avanzada y es difícil de implementar en una aplicación web simple. Por ahora, por favor ingresa el número de serie manualmente.</p>
-                                        </div>`;
-            resultsContainer.scrollIntoView({ behavior: 'smooth' });
-        }
 
     </script>
 </body>
 </html>
-
 

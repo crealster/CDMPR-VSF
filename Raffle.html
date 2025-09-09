@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Rifas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Simple scrollbar styling for the output area */
+        #raffleOutput::-webkit-scrollbar {
+            width: 8px;
+        }
+        #raffleOutput::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        #raffleOutput::-webkit-scrollbar-thumb {
+            background-color: #94a3b8;
+            border-radius: 10px;
+            border: 2px solid #f1f5f9;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased">
+
+    <div class="container mx-auto p-4 md:p-8 relative">
+        <!-- Logo -->
+        <img src="https://github.com/crealster/CDMPR-VSF/blob/main/Logo%20medium.png?raw=true" alt="Logo CDMPR" class="absolute top-4 left-4 md:top-8 md:left-8 w-20 h-20 md:w-32 md:h-32">
+
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-slate-900">Generador de Rifas CDMPR 🎟️</h1>
+            <p class="text-slate-600 mt-2">Crea y formatea fácilmente tus publicaciones de rifas.</p>
+            <div class="mt-4">
+                <a href="https://www.facebook.com/groups/cdmpr" target="_blank" rel="noopener noreferrer" class="inline-flex items-center bg-blue-800 text-white font-bold py-2 px-5 rounded-lg hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-transform transform hover:scale-105">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd"></path></svg>
+                    Visita nuestro grupo de Facebook
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Input Form Section -->
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg">
+                <h2 class="text-2xl font-semibold mb-6 border-b pb-4">Detalles de la Rifa</h2>
+                <form id="raffleForm" class="space-y-5">
+                    <div>
+                        <label for="raffleTitle" class="block text-sm font-medium text-slate-700 mb-1">Título de la Rifa <span class="text-red-500">*</span></label>
+                        <input type="text" id="raffleTitle" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Ej: ¡Rifa de Gadgets!" required>
+                    </div>
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-slate-700 mb-1">Descripción / Premio <span class="text-red-500">*</span></label>
+                        <textarea id="description" rows="3" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Ej: ¡Gana una tableta y un altavoz inteligente nuevos!" required></textarea>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="pricePerNumber" class="block text-sm font-medium text-slate-700 mb-1">$ por Número <span class="text-red-500">*</span></label>
+                            <input type="number" id="pricePerNumber" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="5.00" required step="0.01" min="0">
+                        </div>
+                        <div>
+                            <label for="priceForTwo" class="block text-sm font-medium text-slate-700 mb-1">$ por 2 números (Opcional)</label>
+                            <input type="number" id="priceForTwo" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="8.00" step="0.01" min="0">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="shippingCost" class="block text-sm font-medium text-slate-700 mb-1">Costo de Envío <span class="text-red-500">*</span></label>
+                            <input type="text" id="shippingCost" list="shippingOptions" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Incluido o $10" required>
+                            <datalist id="shippingOptions">
+                                <option value="Incluido">
+                            </datalist>
+                        </div>
+                        <div>
+                            <label for="totalNumbers" class="block text-sm font-medium text-slate-700 mb-1">Total de Números <span class="text-red-500">*</span></label>
+                            <input type="number" id="totalNumbers" value="26" min="1" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="paymentMethods" class="block text-sm font-medium text-slate-700 mb-1">Métodos de Pago <span class="text-red-500">*</span></label>
+                        <input type="text" id="paymentMethods" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="ATH Móvil, Paypal, Efectivo" required>
+                    </div>
+                    <div>
+                        <label for="additionalInfo" class="block text-sm font-medium text-slate-700 mb-1">Información Adicional (Opcional)</label>
+                        <textarea id="additionalInfo" rows="2" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Ej: ¡El ganador se anuncia en vivo el viernes!"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-transform transform hover:scale-105">
+                        Generar Rifa
+                    </button>
+                </form>
+
+                <!-- Total Value Display -->
+                <div id="totalValueDisplay" class="mt-6 text-center bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                    <p class="text-lg font-semibold text-slate-800">Valor Total de la Rifa: <span id="calculatedTotal" class="font-bold text-blue-600">$0.00</span></p>
+                </div>
+            </div>
+
+            <!-- Output Display Section -->
+            <div id="outputCard" class="bg-white p-6 md:p-8 rounded-2xl shadow-lg h-full flex flex-col">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                     <h2 class="text-2xl font-semibold">Publicación Formateada</h2>
+                     <button id="copyButton" class="bg-slate-200 text-slate-800 font-bold py-2 px-4 rounded-lg hover:bg-slate-300 focus:outline-none focus:ring-4 focus:ring-slate-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        Copiar
+                    </button>
+                </div>
+                <div class="flex-grow bg-slate-50 p-4 rounded-lg h-96">
+                    <textarea id="raffleOutput" class="w-full h-full bg-transparent resize-none border-none focus:ring-0 text-sm text-slate-700" readonly>Tu publicación de rifa generada aparecerá aquí...</textarea>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // DOM element references
+        const raffleForm = document.getElementById('raffleForm');
+        const raffleOutput = document.getElementById('raffleOutput');
+        const copyButton = document.getElementById('copyButton');
+        const outputCard = document.getElementById('outputCard');
+        const shippingCostInput = document.getElementById('shippingCost');
+        const pricePerNumberInput = document.getElementById('pricePerNumber');
+        const totalNumbersInput = document.getElementById('totalNumbers');
+        const calculatedTotalSpan = document.getElementById('calculatedTotal');
+
+        // Prevent '$' from being entered in the shipping cost field
+        shippingCostInput.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/\$/g, '');
+        });
+
+        // Function to calculate and display the total raffle value
+        function updateTotalValue() {
+            const price = parseFloat(pricePerNumberInput.value) || 0;
+            const numbers = parseInt(totalNumbersInput.value, 10) || 0;
+            const total = price * numbers;
+            
+            // Format to currency, suitable for PR (USD)
+            const formattedTotal = total.toLocaleString('es-PR', {
+                style: 'currency',
+                currency: 'USD'
+            });
+
+            if (calculatedTotalSpan) {
+                calculatedTotalSpan.textContent = formattedTotal;
+            }
+        }
+
+        // Add event listeners to update the total automatically
+        pricePerNumberInput.addEventListener('input', updateTotalValue);
+        totalNumbersInput.addEventListener('input', updateTotalValue);
+
+        // Handle form submission
+        raffleForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Get values from the form
+            const title = document.getElementById('raffleTitle').value;
+            const description = document.getElementById('description').value;
+            const pricePerNumber = document.getElementById('pricePerNumber').value;
+            const priceForTwo = document.getElementById('priceForTwo').value;
+            const shippingCost = document.getElementById('shippingCost').value;
+            const paymentMethods = document.getElementById('paymentMethods').value.split(',').map(method => method.trim());
+            const additionalInfo = document.getElementById('additionalInfo').value;
+            const totalNumbers = parseInt(document.getElementById('totalNumbers').value, 10);
+            
+            // Format shipping cost
+            let formattedShippingCost = shippingCost;
+            if (shippingCost.trim() !== '' && !isNaN(parseFloat(shippingCost)) && isFinite(shippingCost)) {
+                formattedShippingCost = `$${shippingCost}`;
+            }
+
+            // Construct the output string
+            let output = `✨ **${title.toUpperCase()}** ✨\n\n`;
+            output += `--------------------\n\n`;
+            output += `🎁 **Premio:**\n${description}\n\n`;
+
+            output += `**APORTACION:**\n`;
+            output += `• **1 Número:** $${pricePerNumber}\n`;
+            if (priceForTwo) {
+                output += `• **2 Números:** $${priceForTwo}\n`;
+            }
+            output += `\n`;
+
+            output += `🚚 **Envío:**\n${formattedShippingCost} (PR y USA)\n\n`;
+
+            output += `💳 **Métodos de Pago:**\n`;
+            paymentMethods.forEach(method => {
+                output += `• ${method}\n`;
+            });
+            output += `\n`;
+            
+            if (additionalInfo) {
+                output += `ℹ️ **Detalles Adicionales:**\n${additionalInfo}\n\n`;
+            }
+            
+            output += `--------------------\n\n`;
+            output += `**¡Reclama tu espacio abajo!** 👇\n\n`;
+
+            // Generate the number list
+            for (let i = 1; i <= totalNumbers; i++) {
+                output += `${i}. \n`;
+            }
+
+            // Display the output
+            raffleOutput.value = output;
+            
+            // Enable the copy button
+            copyButton.disabled = false;
+            copyButton.textContent = 'Copiar';
+        });
+
+        // Handle the copy button click
+        copyButton.addEventListener('click', () => {
+            if (navigator.clipboard && window.isSecureContext) {
+                // Modern async clipboard API
+                navigator.clipboard.writeText(raffleOutput.value).then(() => {
+                    showCopiedMessage();
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                    fallbackCopy();
+                });
+            } else {
+                // Fallback for older browsers
+                fallbackCopy();
+            }
+        });
+        
+        function fallbackCopy() {
+            raffleOutput.select();
+            raffleOutput.setSelectionRange(0, 99999); // For mobile devices
+            try {
+                document.execCommand('copy');
+                showCopiedMessage();
+            } catch (err) {
+                console.error('Fallback copy failed', err);
+                copyButton.textContent = '¡Error!';
+            }
+        }
+
+        function showCopiedMessage() {
+            copyButton.textContent = '¡Copiado! ✅';
+            copyButton.classList.add('bg-green-500', 'text-white');
+            copyButton.classList.remove('bg-slate-200', 'text-slate-800');
+            setTimeout(() => {
+                copyButton.textContent = 'Copiar';
+                copyButton.classList.remove('bg-green-500', 'text-white');
+                copyButton.classList.add('bg-slate-200', 'text-slate-800');
+            }, 2000);
+        }
+
+        // Initial calculation on page load
+        updateTotalValue();
+
+    </script>
+</body>
+</html>
+
+
+
+
+
+
